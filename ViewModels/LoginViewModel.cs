@@ -1,29 +1,30 @@
 ﻿using System.Windows.Input;
 using Betawave.Classes;
+using Microsoft.Maui.Controls;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Betawave.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class LoginViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         private string _username;
         private string _password;
-        private readonly DatabaseAccess dbAccess = new DatabaseAccess();
-        public event PropertyChangedEventHandler PropertyChanged;
-
+        private readonly DatabaseManager _databaseManager;
 
         public ICommand LoginCommand { get; private set; }
 
-        public MainViewModel()
+        public LoginViewModel()
         {
-            LoginCommand = new Command(ExecuteLoginCommand);
+            _databaseManager = new DatabaseManager(new DatabaseAccess()); // Ensure you pass correct dependencies
+            LoginCommand = new Command(async () => await ExecuteLoginCommand());
         }
-
 
         public string Username
         {
-            get { return _username; }
+            get => _username;
             set
             {
                 if (_username != value)
@@ -36,7 +37,7 @@ namespace Betawave.ViewModels
 
         public string Password
         {
-            get { return _password; }
+            get => _password;
             set
             {
                 if (_password != value)
@@ -47,25 +48,26 @@ namespace Betawave.ViewModels
             }
         }
 
-        public async void ExecuteLoginCommand()
+        public async Task ExecuteLoginCommand()
         {
-            if (string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(Password))
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Both username and password are required.", "OK");
                 return;
             }
 
-            if (await dbAccess.ValidateUser(Username, Password))
+            if (await _databaseManager.ValidateUser(Username, Password))
             {
-                // Check if the logged in user is an admin
-                if (dbAccess.IsAdmin(Username)) // Removed the incorrect assignment (=) and used the correct comparison
+                // Load data from the database
+                await _databaseManager.LoadAllDataAsync();
+
+                // Navigation based on user role
+                if (await _databaseManager.IsAdmin(Username))
                 {
-                    // If user is an admin, navigate to an admin-specific page or perform admin-specific actions
                     await Shell.Current.GoToAsync("///AdminDashboard");
                 }
                 else
                 {
-                    // If user is not an admin, navigate to the main menu or standard user page
                     await Shell.Current.GoToAsync("///MainMenu");
                 }
             }
