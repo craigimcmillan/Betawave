@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿/*Project name: Betawave
+Author: Craig McMillan
+Date: 06 / 05 / 2024
+Project Description: Music player application for HND Software Development Year 2 Graded Unit
+Class Description: This view model was created to manage the interactions, updating and displaying of the UI on the Main menu content page  */
+
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 using System.Windows.Input;
 using Betawave.Classes;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Org.BouncyCastle.Utilities.Zlib;
+
 
 namespace Betawave.ViewModels
 {
