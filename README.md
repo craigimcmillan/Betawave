@@ -1,4 +1,4 @@
-# Beta Wave
+# Betawave
 
 Beta Wave is a Windows desktop music player developed in 2024 as my final college software development project.
 
